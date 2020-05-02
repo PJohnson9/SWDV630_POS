@@ -75,11 +75,8 @@ class Item(Base):
         self.added_by = employee
         
     def __repr__(self):
-        return "{} Item - ID: {} Barcode: {}; Category: {}; Description: {}".format(self.type,
-                                                                                    self.item_id,
-                                                                                    self.barcode,
-                                                                                    self.category,
-                                                                                    self.description)
+        return "{} Item - ID: {} Barcode: {}; Category: {}; Description: {}".format(
+            self.type, self.item_id, self.barcode, self.category, self.description)
     
     __tablename__ = "Items"
     item_id = sa.Column(sa.Integer, primary_key = True)
@@ -177,8 +174,7 @@ class Sale(Base):
     def add_item(self, barcode, session, quantity = 1):
         item = Item.get_item_from_barcode(barcode, session)
         saleitem = SaleItem(item, quantity, self)
-        
-        
+               
     def get_total(self):
         total = 0
         for i in self.items:
@@ -195,11 +191,10 @@ def populate_database(session):
     session.add(Clerk("Ann D.", "0000"))
     session.commit()
     
-        # Add a category
+    # Add a category
     paper_category = Category("Paper Products")
     session.add(paper_category)
-    session.commit()
-    
+    session.commit()  
 
     # Create Some Items
     session.add(Fixed_Price_Item(2812, "Notebook", paper_category, bob, 5.99))
@@ -212,10 +207,9 @@ def main():
     session = sa.orm.sessionmaker(bind=engine)()
     
     populate_database(session)  # Adds sample items and users
- 
-    bob = session.query(Employee).first()
 
     # Check PINs:
+    bob = session.query(Employee).first()
     print("Check incorrect PIN for Bob:", bob.verify_PIN("1111"))
     print("Check correct PIN for Bob:  ", bob.verify_PIN("1234"))
 
@@ -224,19 +218,17 @@ def main():
     print("Check old PIN for Bob:", bob.verify_PIN("1234"))
     print("Check new PIN for Bob:", bob.verify_PIN("5309"))
 
-
     # Print Employee List
     print("Employees:")
     for employee in session.query(Employee).all():
         print(employee)
 
-    
     # Create a  Sale
-    sale = Sale(bob)  # Generate new sale
-    session.add(sale) # Add to session
-    sale.add_item(2812, session)    # Add items
+    sale = Sale(bob)                  # Generate new sale
+    session.add(sale)                 # Add to session
+    sale.add_item(2812, session)      # Add items
     sale.add_item(4353, session, 5)
-    sale.finalize(session)
+    sale.finalize(session)            # timestamp and commit to database
     
     print("Sale Items:")
     for si in sale.items:
@@ -244,8 +236,7 @@ def main():
     print("Sale Total:", sale.get_total())
     print("Sale Clerk:", sale.clerk)
     print("Sale Time: ", sale.timestamp)
-    
-    
+       
 
 if __name__ == "__main__":
     main()
